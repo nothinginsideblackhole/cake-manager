@@ -32,11 +32,16 @@ public class Cake implements Serializable {
     private String title;
 
     @JsonProperty("desc")
-    @Column(name="description",nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @JsonProperty("image")
-    @Column(name="imageLink",nullable = false)
+    @Column(name = "imageLink", nullable = false)
     private String imageLink;
 
+    public Cake(String title, String description, String imageLink) {
+        this.title = title;
+        this.description = description;
+        this.imageLink = imageLink;
+    }
 }
