@@ -2,12 +2,12 @@ package com.santosh.cakemanager.service;
 
 import com.santosh.cakemanager.exception.CakeServiceException;
 import com.santosh.cakemanager.model.Cake;
+import com.santosh.cakemanager.model.request.CakeUpdateRequest;
 import com.santosh.cakemanager.repository.CakeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,18 +32,17 @@ public class CakeServiceImpl implements CakeService {
     }
 
 
-
     /**
      * Update Cake.
      *
-     * @param cake cake.
+     * @param cakeUpdateRequest cakeUpdateRequest.
      * @return cake
      */
     @Override
-    public Cake updateCake(final Cake cake,final Long id) throws CakeServiceException {
-        final Cake dbCake = cakeRepository.getReferenceById(id);
-        dbCake.setDescription(cake.getDescription());
-        dbCake.setImageLink(cake.getImageLink());
+    public Cake updateCake(final CakeUpdateRequest cakeUpdateRequest, final String title) throws CakeServiceException {
+        Cake dbCake = validateCake(title);
+        dbCake.setDescription(cakeUpdateRequest.getDescription());
+        dbCake.setImageLink(cakeUpdateRequest.getImageLink());
         return cakeRepository.save(dbCake);
     }
 
@@ -70,11 +69,6 @@ public class CakeServiceImpl implements CakeService {
         return cakeRepository.save(cake);
     }
 
-    private void saveAll(final Collection<Cake> cakes) {
-        log.info("Save All size: " + cakes.size());
-        cakeRepository.saveAll(cakes);
-    }
-
     private void cakeExists(final String title) throws  CakeServiceException{
        if(getCakeByTitle(title).isPresent()){
             final String message = "Cake already exists with title : " + title;
@@ -83,7 +77,7 @@ public class CakeServiceImpl implements CakeService {
         }
     }
 
-    private Cake validateCake(final String title) throws CakeServiceException {
+    public Cake validateCake(final String title) throws CakeServiceException {
         final Optional<Cake> cakeByTitle = getCakeByTitle(title);
         final String message = "No cake found with the title : " + title;
         return cakeByTitle.orElseThrow(() -> new CakeServiceException(message));

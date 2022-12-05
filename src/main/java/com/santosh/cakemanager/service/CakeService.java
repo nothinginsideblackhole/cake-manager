@@ -2,6 +2,7 @@ package com.santosh.cakemanager.service;
 
 import com.santosh.cakemanager.exception.CakeServiceException;
 import com.santosh.cakemanager.model.Cake;
+import com.santosh.cakemanager.model.request.CakeUpdateRequest;
 
 import java.util.List;
 
@@ -17,10 +18,10 @@ public interface CakeService {
     /**
      * Update Cake.
      *
-     * @param cake cake.
+     * @param cakeUpdateRequest cakeUpdateRequest.
      * @return cake.
      */
-    Cake updateCake(Cake cake,Long id) throws CakeServiceException;
+    Cake updateCake(CakeUpdateRequest cakeUpdateRequest, String title) throws CakeServiceException;
 
     /**
      * Delete Cake.

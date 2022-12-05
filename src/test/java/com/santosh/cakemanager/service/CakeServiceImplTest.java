@@ -2,6 +2,7 @@ package com.santosh.cakemanager.service;
 
 import com.santosh.cakemanager.exception.CakeServiceException;
 import com.santosh.cakemanager.model.Cake;
+import com.santosh.cakemanager.model.request.CakeUpdateRequest;
 import com.santosh.cakemanager.repository.CakeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,16 +40,14 @@ class CakeServiceImplTest {
     @Test
     void updateCake() throws CakeServiceException {
         Cake cake = new Cake(1L, "cake1", "CAKE1", "url1");
-        when(cakeRepository.getReferenceById(1L)).thenReturn(cake);
+        CakeUpdateRequest cakeUpdateRequest = new CakeUpdateRequest("CAKE1", "url1");
+        when(cakeRepository.getCakeByTitle("cake1")).thenReturn(Optional.of(cake));
         when(cakeRepository.save(cake)).thenReturn(cake);
-        Cake cake1 = cakeService.updateCake(cake, 1L);
+        Cake cake1 = cakeService.updateCake(cakeUpdateRequest, "cake1");
         Assertions.assertEquals(cake1, cake);
-
-
-        verify(cakeRepository, times(1)).getReferenceById(1L);
+        verify(cakeRepository, times(1)).getCakeByTitle("cake1");
         verify(cakeRepository, times(1)).save(cake);
         verifyNoMoreInteractions(cakeRepository);
-
     }
 
     @Test
@@ -71,6 +72,15 @@ class CakeServiceImplTest {
 
         verify(cakeRepository, times(1)).getCakeByTitle("cake1");
         verify(cakeRepository, times(1)).save(cake);
+        verifyNoMoreInteractions(cakeRepository);
+    }
+
+    @Test
+    void validateCake() {
+        when(cakeRepository.getCakeByTitle("cake1")).thenReturn(Optional.empty());
+        Exception exception = assertThrows(CakeServiceException.class, () -> cakeService.validateCake("cake1"));
+        assertEquals("No cake found with the title : cake1", exception.getMessage());
+        verify(cakeRepository, times(1)).getCakeByTitle("cake1");
         verifyNoMoreInteractions(cakeRepository);
     }
 }

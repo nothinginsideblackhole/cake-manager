@@ -3,6 +3,7 @@ package com.santosh.cakemanager.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.santosh.cakemanager.exception.CakeServiceException;
 import com.santosh.cakemanager.model.Cake;
+import com.santosh.cakemanager.model.request.CakeUpdateRequest;
 import com.santosh.cakemanager.service.CakeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,6 @@ class CakeControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/cakes")
                 .accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk());
-
         verify(cakeService,times(1)).getAllCakes();
         verifyNoMoreInteractions(cakeService);
     }
@@ -61,7 +61,6 @@ class CakeControllerTest {
                 .andExpect(jsonPath("$.title",is("cake1")))
                 .andExpect(jsonPath("$.desc",is("CAKE1")))
                 .andExpect(jsonPath("$.image",is("url1")));
-
         verify(cakeService,times(1)).addCake(cake);
         verifyNoMoreInteractions(cakeService);
     }
@@ -76,42 +75,40 @@ class CakeControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-
-
         verify(cakeService,times(1)).addCake(cake);
         verifyNoMoreInteractions(cakeService);
     }
 
     @Test
     void update() throws Exception {
-        Cake cake = new Cake(null,"cake1","CAKE1","url1");
-        when(cakeService.updateCake(cake,1L)).thenReturn(cake);
-        String cakeString = objectMapper.writeValueAsString(cake);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/cakes/{id}",1L)
-                        .content(cakeString)
+        Cake cake = new Cake(null, "cake1", "CAKE1", "url1");
+        CakeUpdateRequest cakeUpdateRequest = new CakeUpdateRequest("CAKE1", "url1");
+        when(cakeService.updateCake(cakeUpdateRequest, "cake1")).thenReturn(cake);
+        String updateRequest = objectMapper.writeValueAsString(cakeUpdateRequest);
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/cakes/{title}", "cake1")
+                        .content(updateRequest)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title",is("cake1")))
-                .andExpect(jsonPath("$.desc",is("CAKE1")))
-                .andExpect(jsonPath("$.image",is("url1")));
+                .andExpect(jsonPath("$.title", is("cake1")))
+                .andExpect(jsonPath("$.desc", is("CAKE1")))
+                .andExpect(jsonPath("$.image", is("url1")));
 
-        verify(cakeService,times(1)).updateCake(cake,1L);
+        verify(cakeService, times(1)).updateCake(cakeUpdateRequest, "cake1");
         verifyNoMoreInteractions(cakeService);
     }
 
     @Test
     void updateException() throws Exception {
-        Cake cake = new Cake(null,"cake1","CAKE1","url1");
-        when(cakeService.updateCake(cake,1L)).thenThrow(new CakeServiceException("blah"));
-        String cakeString = objectMapper.writeValueAsString(cake);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/cakes/{id}",1L)
-                        .content(cakeString)
+        CakeUpdateRequest cakeUpdateRequest = new CakeUpdateRequest("CAKE1", "url1");
+        when(cakeService.updateCake(cakeUpdateRequest, "cake1")).thenThrow(new CakeServiceException("blah"));
+        String updateRequest = objectMapper.writeValueAsString(cakeUpdateRequest);
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/cakes/{title}", "cake1")
+                        .content(updateRequest)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-
-        verify(cakeService,times(1)).updateCake(cake,1L);
+        verify(cakeService, times(1)).updateCake(cakeUpdateRequest, "cake1");
         verifyNoMoreInteractions(cakeService);
     }
 

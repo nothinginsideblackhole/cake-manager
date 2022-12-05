@@ -2,6 +2,7 @@ package com.santosh.cakemanager.controller;
 
 import com.santosh.cakemanager.exception.CakeServiceException;
 import com.santosh.cakemanager.model.Cake;
+import com.santosh.cakemanager.model.request.CakeUpdateRequest;
 import com.santosh.cakemanager.service.CakeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,15 +35,14 @@ public class CakeController {
         }
     }
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
-    public ResponseEntity<Cake> update(@RequestBody Cake cake, @PathVariable Long id) {
+    @RequestMapping(value = "/{title}", method = RequestMethod.PUT)
+    public ResponseEntity<Cake> update(@RequestBody CakeUpdateRequest cakeUpdateRequest, @PathVariable String title) {
         try {
-            final Cake updatedCake = cakeService.updateCake(cake,id);
+            final Cake updatedCake = cakeService.updateCake(cakeUpdateRequest, title);
             return new ResponseEntity<>(updatedCake, HttpStatus.CREATED);
         } catch (CakeServiceException e) {
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
