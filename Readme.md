@@ -7,8 +7,11 @@
 3. Swagger page add to test operations
 4. Application split to layers & code clean up(controller,service,repo)
 5. Unit tests added at every layer level
-6. Circle CI - Build system added to github repo
+6. [Circle CI](https://app.circleci.com/pipelines/github/santoshreddy17/cake-manager) - Build system added to github
+   repo
 7. Docker Image implemented for containerisation
+
+NOTE : Cirlce CI might not be accessible due to security. Happy to show it during discussions.
 
 ## Further Possible Enhancements
 
